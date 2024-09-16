@@ -6,7 +6,7 @@ export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="mx-[10%] flex h-full bg-gray-100 dark:bg-gray-900">
+    <div className="mx-[10%] mt-10 flex h-full rounded-md bg-gray-100 dark:bg-gray-900">
       <aside className="hidden w-64 border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 md:block">
         <div className="flex h-14 items-center justify-center border-b border-gray-200 dark:border-gray-700">
           <Link href="/" className="flex items-center">

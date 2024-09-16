@@ -4,12 +4,13 @@ import { LinkButton } from "~/components/ui/linkbutton";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Switch } from "~/components/ui/switch";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Plus, Trash2, Save } from "lucide-react";
+import { ReactSortable } from "react-sortablejs";
+import { Swap } from "sortablejs";
+import Sortable from "sortablejs";
 
 interface Answer {
   id: number;
@@ -22,6 +23,8 @@ interface Question {
   text: string;
   answers: Answer[];
 }
+
+Sortable.mount(new Swap());
 
 export default function CreateQuiz() {
   const [quizTitle, setQuizTitle] = useState("");
@@ -163,9 +166,17 @@ export default function CreateQuiz() {
             required
           />
         </div>
-        <div className="grid grid-cols-2 gap-5">
+        <ReactSortable
+          swap
+          list={questions}
+          setList={setQuestions}
+          className="grid grid-cols-2 items-center gap-5"
+        >
           {questions.map((question, qIndex) => (
-            <Card key={question.id} className="space-y-4 rounded-md border p-4">
+            <Card
+              key={question.id}
+              className="min-h-32 space-y-4 rounded-md border p-2"
+            >
               <CardHeader className="flex flex-row items-center gap-2 pb-0">
                 <Textarea
                   className="text-xl font-semibold"
@@ -237,24 +248,25 @@ export default function CreateQuiz() {
               </CardContent>
             </Card>
           ))}
+          <Button
+            className="mx-auto my-[8.5rem] w-1/2 items-center"
+            type="button"
+            variant="outline"
+            onClick={addQuestion}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Question
+          </Button>
+        </ReactSortable>
+
+        <div className="flex justify-center gap-5">
+          <Button type="submit">
+            <Save className="mr-2 h-4 w-4" /> Save Quiz
+          </Button>
+
+          <LinkButton href="/dashboard">
+            <Trash2 />
+          </LinkButton>
         </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={addQuestion}
-          className="w-full"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Question
-        </Button>
-
-        <Button type="submit" className="w-full">
-          <Save className="mr-2 h-4 w-4" /> Save Quiz
-        </Button>
-
-        <LinkButton href="/dashboard">
-          <Trash2 />
-        </LinkButton>
       </form>
     </div>
   );
