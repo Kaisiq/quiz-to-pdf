@@ -30,17 +30,86 @@ import Link from "next/link";
 import { HydrateClient } from "~/trpc/server";
 import { UserButton } from "@clerk/nextjs";
 import { LinkButton } from "~/components/ui/linkbutton";
+import { ExportDialog } from "../_components/exportDialog";
+import { Dialog, DialogTrigger } from "~/components/ui/dialog";
 
 export default async function Home() {
   const quizzes = [
-    { id: 1, title: "Math Quiz", questions: 10, lastEdited: "2023-06-15" },
-    { id: 2, title: "Science Trivia", questions: 15, lastEdited: "2023-06-14" },
-    { id: 3, title: "History Test", questions: 20, lastEdited: "2023-06-13" },
-    { id: 4, title: "Language Quiz", questions: 12, lastEdited: "2023-06-12" },
+    {
+      id: 1,
+      title: "Math Quiz",
+      description: "Test for 9th grade, first semester. Score >60 for A",
+      columns: 3,
+      questions: [
+        {
+          id: 1,
+          text: "Question One:",
+          answers: [
+            { id: 1, text: "option 1", isCorrect: false },
+            { id: 2, text: "option 2", isCorrect: false },
+          ],
+        },
+        {
+          id: 2,
+          text: "Question Two:",
+          answers: [
+            { id: 1, text: "1", isCorrect: false },
+            { id: 2, text: "2", isCorrect: false },
+          ],
+        },
+        {
+          id: 3,
+          text: "q3",
+          answers: [
+            { id: 1, text: "1", isCorrect: false },
+            { id: 2, text: "2", isCorrect: false },
+          ],
+        },
+        {
+          id: 4,
+          text: "Question Four:",
+          answers: [
+            { id: 1, text: "1", isCorrect: false },
+            { id: 2, text: "2", isCorrect: false },
+          ],
+        },
+        {
+          id: 5,
+          text: "Question Five:",
+          answers: [
+            { id: 1, text: "1", isCorrect: false },
+            { id: 2, text: "2", isCorrect: false },
+          ],
+        },
+      ],
+      lastEdited: "2023-06-15",
+    },
+    {
+      id: 2,
+      columns: 3,
+      title: "Science Trivia",
+      questions: [],
+      lastEdited: "2023-06-14",
+    },
+    {
+      id: 3,
+      columns: 3,
+      title: "History Test",
+      questions: [],
+      lastEdited: "2023-06-13",
+    },
+    {
+      id: 4,
+      columns: 3,
+      title: "Language Quiz",
+      questions: [],
+      lastEdited: "2023-06-12",
+    },
     {
       id: 5,
+      columns: 3,
       title: "Geography Challenge",
-      questions: 18,
+      questions: [],
       lastEdited: "2023-06-11",
     },
   ];
@@ -76,32 +145,37 @@ export default async function Home() {
                 <TableCell className="cursor-pointer font-medium">
                   {quiz.title}
                 </TableCell>
-                <TableCell>{quiz.questions}</TableCell>
+                <TableCell>{quiz.questions.length}</TableCell>
                 <TableCell>{quiz.lastEdited}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FileText className="mr-2 h-4 w-4" />
-                        Export as PDF
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600">
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Dialog>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DialogTrigger asChild className="flex">
+                          <DropdownMenuItem>
+                            <FileText className="mr-2 h-4 w-4" />
+                            Export as PDF
+                          </DropdownMenuItem>
+                        </DialogTrigger>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-red-600">
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <ExportDialog quiz={quiz} />
+                  </Dialog>
                 </TableCell>
               </TableRow>
             ))}
