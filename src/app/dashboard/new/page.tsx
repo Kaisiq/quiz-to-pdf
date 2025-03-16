@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+
+import { exportToPDF } from "~/lib/exportToPDF";
 
 interface Answer {
   id: number;
@@ -158,6 +158,7 @@ export default function CreateQuiz() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Quiz data:", { title: quizTitle, questions });
+    //save quiz data to DB for user
   };
 
   const preview = async () => {
@@ -183,21 +184,9 @@ export default function CreateQuiz() {
 
     const container = document.createElement("div");
     container.innerHTML = generatedHtml;
-
-    document.body.appendChild(container);
-
     try {
-      await html2canvas(container).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("test-paper.pdf");
-      });
+      document.body.appendChild(container);
+      await exportToPDF(container);
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
