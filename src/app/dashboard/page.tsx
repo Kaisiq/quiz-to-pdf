@@ -21,6 +21,7 @@ import { UserButton } from "@clerk/nextjs";
 import { LinkButton } from "~/components/ui/linkbutton";
 import { ExportDialog } from "../_components/exportDialog";
 import { Dialog, DialogTrigger } from "~/components/ui/dialog";
+import type { Quiz } from "~/types/quiz";
 
 export default async function Home() {
   const quizzes = [
@@ -101,7 +102,7 @@ export default async function Home() {
       questions: [],
       lastEdited: "2023-06-11",
     },
-  ];
+  ] as Quiz[];
   return (
     <HydrateClient>
       <main className="flex-1 overflow-y-auto p-4">
