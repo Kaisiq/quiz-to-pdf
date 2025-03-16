@@ -1,10 +1,10 @@
 "use client";
 
 import { LinkButton } from "~/components/ui/linkbutton";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Download } from "lucide-react";
 import { ReactSortable } from "react-sortablejs";
 import { Swap } from "sortablejs";
 import Sortable from "sortablejs";
@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 interface Answer {
   id: number;
@@ -44,6 +46,8 @@ export default function CreateQuiz() {
     },
   ]);
   const [quizColumns, setQuizColumns] = useState("grid-cols-2");
+
+  const contentRef = useRef(null);
 
   const addQuestion = () => {
     const newQuestion: Question = {
@@ -153,9 +157,52 @@ export default function CreateQuiz() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the quiz data to your backend
     console.log("Quiz data:", { title: quizTitle, questions });
-    // You could also add validation here before submitting
+  };
+
+  const preview = async () => {
+    const generatedHtml = `
+        <div id="test" class="bg-white border border-gray-300 rounded-lg p-6 w-[210mm] min-h-[297mm] shadow-lg">
+            <h1 class="text-2xl font-bold mb-4 text-center">Generated Test Paper</h1>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Question 1:</p>
+                    <p>asd</p>
+                </div>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Question 2:</p>
+                    <p>asd}</p>
+                </div>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Question 3:</p>
+                    <p>asdasd}</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const container = document.createElement("div");
+    container.innerHTML = generatedHtml;
+
+    document.body.appendChild(container);
+
+    try {
+      await html2canvas(container).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save("test-paper.pdf");
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      document.body.removeChild(container); // remove the container after canvas is created.
+    }
   };
 
   return (
@@ -187,6 +234,7 @@ export default function CreateQuiz() {
           </Select>
         </div>
         <ReactSortable
+          ref={contentRef}
           swap
           list={questions}
           setList={setQuestions}
@@ -218,6 +266,16 @@ export default function CreateQuiz() {
         <div className="flex justify-center gap-5">
           <Button type="submit">
             <Save className="mr-2 h-4 w-4" /> Save Quiz
+          </Button>
+
+          <Button
+            type="button"
+            onClick={async (e) => {
+              e.preventDefault();
+              await preview();
+            }}
+          >
+            <Download />
           </Button>
 
           <LinkButton href="/dashboard">
