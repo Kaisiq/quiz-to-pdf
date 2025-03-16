@@ -3,7 +3,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
@@ -16,17 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  FileText,
-  Plus,
-  Settings,
-  User,
-  LogOut,
-  MoreVertical,
-  Pencil,
-  Trash,
-} from "lucide-react";
-import Link from "next/link";
+import { FileText, Plus, MoreVertical, Pencil, Trash } from "lucide-react";
 import { HydrateClient } from "~/trpc/server";
 import { UserButton } from "@clerk/nextjs";
 import { LinkButton } from "~/components/ui/linkbutton";

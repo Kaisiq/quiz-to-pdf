@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { FileText, CheckCircle, Share2, Download } from "lucide-react";
