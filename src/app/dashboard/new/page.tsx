@@ -16,20 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-
 import { exportToPDF } from "~/lib/exportToPDF";
-
-interface Answer {
-  id: number;
-  text: string;
-  isCorrect: boolean;
-}
-
-interface Question {
-  id: number;
-  text: string;
-  answers: Answer[];
-}
+import { quizToHtml } from "~/lib/quizToHtml";
+import type { Question } from "~/types/question";
 
 Sortable.mount(new Swap());
 
@@ -162,35 +151,15 @@ export default function CreateQuiz() {
   };
 
   const preview = async () => {
-    const generatedHtml = `
-        <div id="test" class="bg-white border border-gray-300 rounded-lg p-6 w-[210mm] min-h-[297mm] shadow-lg">
-            <h1 class="text-2xl font-bold mb-4 text-center">Generated Test Paper</h1>
-            <div class="grid grid-cols-1 gap-4">
-                <div class="mb-4">
-                    <p class="font-semibold mb-2">Question 1:</p>
-                    <p>asd</p>
-                </div>
-                <div class="mb-4">
-                    <p class="font-semibold mb-2">Question 2:</p>
-                    <p>asd}</p>
-                </div>
-                <div class="mb-4">
-                    <p class="font-semibold mb-2">Question 3:</p>
-                    <p>asdasd}</p>
-                </div>
-            </div>
-        </div>
-    `;
-
     const container = document.createElement("div");
-    container.innerHTML = generatedHtml;
+    container.innerHTML = quizToHtml(quizTitle, questions);
     try {
       document.body.appendChild(container);
       await exportToPDF(container);
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
-      document.body.removeChild(container); // remove the container after canvas is created.
+      document.body.removeChild(container);
     }
   };
 
@@ -231,7 +200,7 @@ export default function CreateQuiz() {
         >
           {questions.map((question, qIndex) => (
             <QuestionCard
-              key={qIndex}
+              key={question.id}
               question={question}
               qIndex={qIndex}
               updateAnswerText={updateAnswerText}
