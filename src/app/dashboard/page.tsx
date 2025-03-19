@@ -130,8 +130,8 @@ export default async function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {quizzes.map((quiz) => (
-              <TableRow key={quiz.id}>
+            {quizzes.map((quiz, idx) => (
+              <TableRow key={idx}>
                 <TableCell className="cursor-pointer font-medium">
                   {quiz.title}
                 </TableCell>

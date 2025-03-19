@@ -19,40 +19,45 @@ import {
 import { exportToPDF } from "~/lib/exportToPDF";
 import { quizToHtml } from "~/lib/quizToHtml";
 import type { Question } from "~/types/question";
+import type { Quiz } from "~/types/quiz";
 
 Sortable.mount(new Swap());
 
 export default function CreateQuiz() {
-  const [quizTitle, setQuizTitle] = useState("");
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      text: "",
-      answers: [
-        { id: 1, text: "", isCorrect: false },
-        { id: 2, text: "", isCorrect: false },
-      ],
-    },
-  ]);
-  const [quizColumns, setQuizColumns] = useState("grid-cols-2");
+  const [quiz, setQuiz] = useState<Quiz>({
+    title: "A perfect title",
+    description: "Even more perfect description",
+    questions: [
+      {
+        id: 1,
+        text: "Question number 1",
+        answers: [
+          { id: 1, text: "Answer 1", isCorrect: false },
+          { id: 2, text: "Answer 2", isCorrect: false },
+        ],
+      },
+    ],
+    columns: "grid-cols-2",
+  });
 
   const contentRef = useRef(null);
 
   const addQuestion = () => {
     const newQuestion: Question = {
-      id: questions.length + 1,
-      text: "",
+      id: quiz.questions.length + 1,
+      text: `Question #${quiz.questions.length + 1}`,
       answers: [
-        { id: 1, text: "", isCorrect: false },
-        { id: 2, text: "", isCorrect: false },
+        { id: 1, text: "Answer 1", isCorrect: false },
+        { id: 2, text: "Answer 2", isCorrect: false },
       ],
     };
-    setQuestions([...questions, newQuestion]);
+    setQuiz({ ...quiz, questions: [...quiz.questions, newQuestion] });
   };
 
   const addAnswer = (questionId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -64,13 +69,16 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const updateQuestionText = (questionId: number, text: string) => {
-    setQuestions(
-      questions.map((q) => (q.id === questionId ? { ...q, text } : q)),
-    );
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) =>
+        q.id === questionId ? { ...q, text } : q,
+      ),
+    });
   };
 
   const updateAnswerText = (
@@ -78,8 +86,9 @@ export default function CreateQuiz() {
     answerId: number,
     text: string,
   ) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -90,12 +99,13 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const toggleCorrectAnswer = (questionId: number, answerId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -107,12 +117,13 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const removeQuestion = (questionId: number) => {
-    setQuestions(
-      questions
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions
         .filter((q) => q.id !== questionId)
         .map((q) => {
           if (q.id > questionId) {
@@ -120,12 +131,13 @@ export default function CreateQuiz() {
           }
           return q;
         }),
-    );
+    });
   };
 
   const removeAnswer = (questionId: number, answerId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -141,25 +153,32 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Quiz data:", { title: quizTitle, questions });
+    console.log("Quiz data:", quiz);
     //save quiz data to DB for user
   };
 
   const preview = async () => {
+    const outerContainer = document.createElement("div");
+    outerContainer.className = "w-[100vw] h-[100vh]"; /*top-[10000px] */
+    outerContainer.style.position = "absolute";
+
     const container = document.createElement("div");
-    container.innerHTML = quizToHtml(quizTitle, questions);
+    container.innerHTML = quizToHtml(quiz);
+
+    outerContainer.appendChild(container);
+
     try {
-      document.body.appendChild(container);
+      document.body.appendChild(outerContainer);
       await exportToPDF(container);
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
-      document.body.removeChild(container);
+      // document.body.removeChild(outerContainer);
     }
   };
 
@@ -171,14 +190,14 @@ export default function CreateQuiz() {
 
           <Input
             id="quiz-title"
-            value={quizTitle}
-            onChange={(e) => setQuizTitle(e.target.value)}
+            value={quiz.title}
+            onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
             placeholder="Enter quiz title"
             required
           />
           <Select
             onValueChange={(value) => {
-              setQuizColumns(value);
+              setQuiz({ ...quiz, columns: value });
             }}
           >
             <SelectTrigger className="w-[180px]">
@@ -194,11 +213,13 @@ export default function CreateQuiz() {
         <ReactSortable
           ref={contentRef}
           swap
-          list={questions}
-          setList={setQuestions}
-          className={`grid ${quizColumns} items-center gap-5`}
+          list={quiz.questions}
+          setList={(newQuestions) =>
+            setQuiz({ ...quiz, questions: newQuestions })
+          }
+          className={`grid ${quiz.columns} items-center gap-5`}
         >
-          {questions.map((question, qIndex) => (
+          {quiz.questions.map((question, qIndex) => (
             <QuestionCard
               key={question.id}
               question={question}
