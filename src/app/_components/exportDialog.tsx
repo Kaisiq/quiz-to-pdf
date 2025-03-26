@@ -1,29 +1,10 @@
-import { FileText } from "lucide-react";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
-
-type Quiz = {
-  id: number;
-  title: string;
-  description: string;
-  columns: number;
-  questions: {
-    id: number;
-    text: string;
-    answers: {
-      id: number;
-      text: string;
-      isCorrect: boolean;
-    }[];
-  }[];
-  lastEdited: string;
-};
+import type { Quiz } from "~/types/quiz";
 
 export const ExportDialog = ({ quiz }: { quiz: Quiz }) => {
   return (

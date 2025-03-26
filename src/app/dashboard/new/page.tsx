@@ -1,59 +1,66 @@
 "use client";
 
-import { LinkButton } from "~/components/ui/linkbutton";
-import { useState } from "react";
+import { Download, Plus, Save, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ReactSortable } from "react-sortablejs";
+import Sortable, { Swap } from "sortablejs";
+import QuestionCard from "~/components/QuestionCard";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { LinkButton } from "~/components/ui/linkbutton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { Plus, Trash2, Save } from "lucide-react";
-import { ReactSortable } from "react-sortablejs";
-import { Swap } from "sortablejs";
-import Sortable from "sortablejs";
-
-interface Answer {
-  id: number;
-  text: string;
-  isCorrect: boolean;
-}
-
-interface Question {
-  id: number;
-  text: string;
-  answers: Answer[];
-}
+import { exportToPDF } from "~/lib/exportToPDF";
+import { quizToHtml } from "~/lib/quizToHtml";
+import type { Question } from "~/types/question";
+import type { Quiz } from "~/types/quiz";
+import GradingScaleInput from "~/components/GradingScaleInput";
 
 Sortable.mount(new Swap());
 
 export default function CreateQuiz() {
-  const [quizTitle, setQuizTitle] = useState("");
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      text: "",
-      answers: [
-        { id: 1, text: "", isCorrect: false },
-        { id: 2, text: "", isCorrect: false },
-      ],
-    },
-  ]);
+  const [quiz, setQuiz] = useState<Quiz>({
+    title: "A perfect title",
+    description: "Even more perfect description",
+    questions: [
+      {
+        id: 1,
+        text: "Question number 1",
+        answers: [
+          { id: 1, text: "Answer 1", isCorrect: false },
+          { id: 2, text: "Answer 2", isCorrect: false },
+        ],
+      },
+    ],
+    columns: "grid-cols-2",
+    gradingScale: [{ minScore: 0, maxScore: 0, grade: "" }],
+  });
+
+  const contentRef = useRef(null);
 
   const addQuestion = () => {
     const newQuestion: Question = {
-      id: questions.length + 1,
-      text: "",
+      id: quiz.questions.length + 1,
+      text: `Question #${quiz.questions.length + 1}`,
       answers: [
-        { id: 1, text: "", isCorrect: false },
-        { id: 2, text: "", isCorrect: false },
+        { id: 1, text: "Answer 1", isCorrect: false },
+        { id: 2, text: "Answer 2", isCorrect: false },
       ],
     };
-    setQuestions([...questions, newQuestion]);
+    setQuiz({ ...quiz, questions: [...quiz.questions, newQuestion] });
   };
 
   const addAnswer = (questionId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -65,13 +72,16 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const updateQuestionText = (questionId: number, text: string) => {
-    setQuestions(
-      questions.map((q) => (q.id === questionId ? { ...q, text } : q)),
-    );
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) =>
+        q.id === questionId ? { ...q, text } : q,
+      ),
+    });
   };
 
   const updateAnswerText = (
@@ -79,8 +89,9 @@ export default function CreateQuiz() {
     answerId: number,
     text: string,
   ) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -91,12 +102,13 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const toggleCorrectAnswer = (questionId: number, answerId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -108,12 +120,13 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const removeQuestion = (questionId: number) => {
-    setQuestions(
-      questions
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions
         .filter((q) => q.id !== questionId)
         .map((q) => {
           if (q.id > questionId) {
@@ -121,12 +134,13 @@ export default function CreateQuiz() {
           }
           return q;
         }),
-    );
+    });
   };
 
   const removeAnswer = (questionId: number, answerId: number) => {
-    setQuestions(
-      questions.map((q) => {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
@@ -142,111 +156,105 @@ export default function CreateQuiz() {
         }
         return q;
       }),
-    );
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the quiz data to your backend
-    console.log("Quiz data:", { title: quizTitle, questions });
-    // You could also add validation here before submitting
+    console.log("Quiz data:", quiz);
+    //save quiz data to DB for user
+  };
+
+  const preview = async () => {
+    const outerContainer = document.createElement("div");
+    outerContainer.className = "w-[100vw] h-[100vh] top-[10000px]";
+    outerContainer.style.position = "absolute";
+
+    const container = document.createElement("div");
+    container.innerHTML = quizToHtml(quiz);
+
+    outerContainer.appendChild(container);
+
+    try {
+      document.body.appendChild(outerContainer);
+      await exportToPDF(container);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      document.body.removeChild(outerContainer);
+    }
   };
 
   return (
     <div className="container w-full p-4">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="mx-[25%] flex flex-col items-center justify-center">
+        <div className="mx-[25%] flex flex-col items-center justify-center gap-3">
           <h1 className="mb-4 text-2xl font-bold">Create New Quiz</h1>
 
           <Input
+            className=""
             id="quiz-title"
-            value={quizTitle}
-            onChange={(e) => setQuizTitle(e.target.value)}
+            value={quiz.title}
+            onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
             placeholder="Enter quiz title"
             required
           />
+          <div className="flex w-full items-center gap-3">
+            <Textarea
+              id="quiz-description"
+              value={quiz.description}
+              onChange={(e) =>
+                setQuiz({ ...quiz, description: e.target.value })
+              }
+              placeholder="Enter quiz description"
+            />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-nowrap text-sm">Show in PDF?</span>
+              <Switch />
+            </div>
+          </div>
+          <Select
+            onValueChange={(value) => {
+              setQuiz({ ...quiz, columns: value });
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="How much columns per row" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="grid-cols-1">1 Column</SelectItem>
+              <SelectItem value="grid-cols-2">2 Columns</SelectItem>
+              <SelectItem value="grid-cols-3">3 Columns</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+        <GradingScaleInput
+          gradingScale={quiz.gradingScale}
+          setGradingScale={(newGradingScale) =>
+            setQuiz({ ...quiz, gradingScale: newGradingScale })
+          }
+        />
         <ReactSortable
+          ref={contentRef}
           swap
-          list={questions}
-          setList={setQuestions}
-          className="grid grid-cols-2 items-center gap-5"
+          list={quiz.questions}
+          setList={(newQuestions) =>
+            setQuiz({ ...quiz, questions: newQuestions })
+          }
+          className={`grid ${quiz.columns} items-center gap-5`}
         >
-          {questions.map((question, qIndex) => (
-            <Card
+          {quiz.questions.map((question, qIndex) => (
+            <QuestionCard
               key={question.id}
-              className="min-h-32 space-y-4 rounded-md border p-2"
-            >
-              <CardHeader className="flex flex-row items-center gap-2 pb-0">
-                <Textarea
-                  className="text-xl font-semibold"
-                  id={`question-${question.id}`}
-                  value={question.text}
-                  onChange={(e) =>
-                    updateQuestionText(question.id, e.target.value)
-                  }
-                  placeholder={`Question ${qIndex + 1}`}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="high"
-                  onClick={() => removeQuestion(question.id)}
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                <RadioGroup>
-                  {question.answers.map((answer, aIndex) => (
-                    <div
-                      key={answer.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <RadioGroupItem
-                        value={answer.id.toString()}
-                        id={`q${question.id}-a${answer.id}`}
-                        checked={answer.isCorrect}
-                        onClick={() =>
-                          toggleCorrectAnswer(question.id, answer.id)
-                        }
-                      />
-                      <Input
-                        value={answer.text}
-                        onChange={(e) =>
-                          updateAnswerText(
-                            question.id,
-                            answer.id,
-                            e.target.value,
-                          )
-                        }
-                        placeholder={`Answer ${aIndex + 1}`}
-                        required
-                        className="flex-grow"
-                      />
-                      {question.answers.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeAnswer(question.id, answer.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </RadioGroup>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => addAnswer(question.id)}
-                >
-                  <Plus /> Add Answer
-                </Button>
-              </CardContent>
-            </Card>
+              question={question}
+              qIndex={qIndex}
+              updateAnswerText={updateAnswerText}
+              addAnswer={addAnswer}
+              updateQuestionText={updateQuestionText}
+              removeAnswer={removeAnswer}
+              removeQuestion={removeQuestion}
+              toggleCorrectAnswer={toggleCorrectAnswer}
+            />
           ))}
           <Button
             className="mx-auto my-[8.5rem] w-1/2 items-center"
@@ -261,6 +269,16 @@ export default function CreateQuiz() {
         <div className="flex justify-center gap-5">
           <Button type="submit">
             <Save className="mr-2 h-4 w-4" /> Save Quiz
+          </Button>
+
+          <Button
+            type="button"
+            onClick={async (e) => {
+              e.preventDefault();
+              await preview();
+            }}
+          >
+            <Download />
           </Button>
 
           <LinkButton href="/dashboard">

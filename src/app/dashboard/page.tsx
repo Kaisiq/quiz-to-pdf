@@ -3,7 +3,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
@@ -16,22 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  FileText,
-  Plus,
-  Settings,
-  User,
-  LogOut,
-  MoreVertical,
-  Pencil,
-  Trash,
-} from "lucide-react";
-import Link from "next/link";
+import { FileText, Plus, MoreVertical, Pencil, Trash } from "lucide-react";
 import { HydrateClient } from "~/trpc/server";
 import { UserButton } from "@clerk/nextjs";
 import { LinkButton } from "~/components/ui/linkbutton";
 import { ExportDialog } from "../_components/exportDialog";
 import { Dialog, DialogTrigger } from "~/components/ui/dialog";
+import type { Quiz } from "~/types/quiz";
 
 export default async function Home() {
   const quizzes = [
@@ -112,7 +102,7 @@ export default async function Home() {
       questions: [],
       lastEdited: "2023-06-11",
     },
-  ];
+  ] as Quiz[];
   return (
     <HydrateClient>
       <main className="flex-1 overflow-y-auto p-4">
@@ -140,8 +130,8 @@ export default async function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {quizzes.map((quiz) => (
-              <TableRow key={quiz.id}>
+            {quizzes.map((quiz, idx) => (
+              <TableRow key={idx}>
                 <TableCell className="cursor-pointer font-medium">
                   {quiz.title}
                 </TableCell>
