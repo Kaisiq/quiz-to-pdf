@@ -1,14 +1,13 @@
 "use client";
 
-import { LinkButton } from "~/components/ui/linkbutton";
+import { Download, Plus, Save, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
+import { ReactSortable } from "react-sortablejs";
+import Sortable, { Swap } from "sortablejs";
+import QuestionCard from "~/components/QuestionCard";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Plus, Trash2, Save, Download } from "lucide-react";
-import { ReactSortable } from "react-sortablejs";
-import { Swap } from "sortablejs";
-import Sortable from "sortablejs";
-import QuestionCard from "~/components/QuestionCard";
+import { LinkButton } from "~/components/ui/linkbutton";
 import {
   Select,
   SelectContent,
@@ -16,10 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { Switch } from "~/components/ui/switch";
+import { Textarea } from "~/components/ui/textarea";
 import { exportToPDF } from "~/lib/exportToPDF";
 import { quizToHtml } from "~/lib/quizToHtml";
 import type { Question } from "~/types/question";
 import type { Quiz } from "~/types/quiz";
+import GradingScaleInput from "~/components/GradingScaleInput";
 
 Sortable.mount(new Swap());
 
@@ -38,6 +40,7 @@ export default function CreateQuiz() {
       },
     ],
     columns: "grid-cols-2",
+    gradingScale: [{ minScore: 0, maxScore: 0, grade: "" }],
   });
 
   const contentRef = useRef(null);
@@ -164,7 +167,7 @@ export default function CreateQuiz() {
 
   const preview = async () => {
     const outerContainer = document.createElement("div");
-    outerContainer.className = "w-[100vw] h-[100vh]"; /*top-[10000px] */
+    outerContainer.className = "w-[100vw] h-[100vh] top-[10000px]";
     outerContainer.style.position = "absolute";
 
     const container = document.createElement("div");
@@ -178,23 +181,38 @@ export default function CreateQuiz() {
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
-      // document.body.removeChild(outerContainer);
+      document.body.removeChild(outerContainer);
     }
   };
 
   return (
     <div className="container w-full p-4">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="mx-[25%] flex flex-col items-center justify-center">
+        <div className="mx-[25%] flex flex-col items-center justify-center gap-3">
           <h1 className="mb-4 text-2xl font-bold">Create New Quiz</h1>
 
           <Input
+            className=""
             id="quiz-title"
             value={quiz.title}
             onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
             placeholder="Enter quiz title"
             required
           />
+          <div className="flex w-full items-center gap-3">
+            <Textarea
+              id="quiz-description"
+              value={quiz.description}
+              onChange={(e) =>
+                setQuiz({ ...quiz, description: e.target.value })
+              }
+              placeholder="Enter quiz description"
+            />
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-nowrap text-sm">Show in PDF?</span>
+              <Switch />
+            </div>
+          </div>
           <Select
             onValueChange={(value) => {
               setQuiz({ ...quiz, columns: value });
@@ -210,6 +228,12 @@ export default function CreateQuiz() {
             </SelectContent>
           </Select>
         </div>
+        <GradingScaleInput
+          gradingScale={quiz.gradingScale}
+          setGradingScale={(newGradingScale) =>
+            setQuiz({ ...quiz, gradingScale: newGradingScale })
+          }
+        />
         <ReactSortable
           ref={contentRef}
           swap

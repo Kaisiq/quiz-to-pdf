@@ -1,3 +1,4 @@
+import type { GradingScale } from "./gradingScale";
 import type { Question } from "./question";
 
 export type Quiz = {
@@ -5,4 +6,5 @@ export type Quiz = {
   description: string;
   columns: string;
   questions: Question[];
+  gradingScale: GradingScale;
 };
