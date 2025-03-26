@@ -37,7 +37,7 @@ const exportToPDF = async (quiz: Quiz) => {
       pageContainer.style.top = "0";
       pageContainer.style.left = "0";
 
-      const pageContent = container.cloneNode(true);
+      const pageContent = container.cloneNode(true) as HTMLDivElement;
       pageContent.style.position = "absolute";
       pageContent.style.top = `-${i * a4Height}px`;
 
