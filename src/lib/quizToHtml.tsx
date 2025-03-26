@@ -14,7 +14,7 @@ const letters = [
 ];
 
 const quizToHtml = (quiz: Quiz) => `
-    <div class="w-[100%] h-[100%] p-16">
+    <div class="w-[var(--150-dpi-width)] h-[var(--150-dpi-height)] p-16">
       <h1 class="text-center pb-6 text-7xl">${quiz.title}</h1>
       <h3 class="text-center text-4xl pb-12 text-wrap">${quiz.description}</h3>
       <div class="py-12 px-20 grid ${quiz.columns} gap-10">

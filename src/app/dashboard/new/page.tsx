@@ -153,7 +153,8 @@ export default function CreateQuiz() {
 
   const preview = async () => {
     const outerContainer = document.createElement("div");
-    outerContainer.className = "w-[100vw] h-[100vh] top-[10000vh]";
+    outerContainer.className =
+      "w-[var(--150-dpi-width)] h-[var(--150-dpi-height)] top-[10000vh]";
     outerContainer.style.position = "absolute";
 
     const container = document.createElement("div");
@@ -167,7 +168,7 @@ export default function CreateQuiz() {
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
-      document.body.removeChild(outerContainer);
+      // document.body.removeChild(outerContainer);
     }
   };
 
