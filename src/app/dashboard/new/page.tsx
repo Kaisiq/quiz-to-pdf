@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Plus, Save, Trash2 } from "lucide-react";
+import { Download, Plus, SkipBackIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import Sortable, { Swap } from "sortablejs";
@@ -20,29 +20,15 @@ import { Textarea } from "~/components/ui/textarea";
 import { exportToPDF } from "~/lib/exportToPDF";
 import { quizToHtml } from "~/lib/quizToHtml";
 import type { Question } from "~/types/question";
-import type { Quiz } from "~/types/quiz";
+import { basicQuiz, type Quiz } from "~/types/quiz";
 import GradingScaleInput from "~/components/GradingScaleInput";
 
 Sortable.mount(new Swap());
 
 export default function CreateQuiz() {
-  const [quiz, setQuiz] = useState<Quiz>({
-    title: "A perfect title",
-    description: "Even more perfect description",
-    questions: [
-      {
-        id: 1,
-        text: "Question number 1",
-        answers: [
-          { id: 1, text: "Answer 1", isCorrect: false },
-          { id: 2, text: "Answer 2", isCorrect: false },
-        ],
-      },
-    ],
-    columns: "grid-cols-2",
-    gradingScale: [{ minScore: 0, maxScore: 0, grade: "" }],
-  });
-
+  const [quiz, setQuiz] = useState<Quiz>(basicQuiz);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showGradingScale, setShowGradingScale] = useState(false);
   const contentRef = useRef(null);
 
   const addQuestion = () => {
@@ -167,7 +153,7 @@ export default function CreateQuiz() {
 
   const preview = async () => {
     const outerContainer = document.createElement("div");
-    outerContainer.className = "w-[100vw] h-[100vh] top-[10000px]";
+    outerContainer.className = "w-[100vw] h-[100vh] top-[10000vh]";
     outerContainer.style.position = "absolute";
 
     const container = document.createElement("div");
@@ -186,7 +172,10 @@ export default function CreateQuiz() {
   };
 
   return (
-    <div className="container w-full p-4">
+    <div className="container relative w-full p-4">
+      <LinkButton href="/">
+        <SkipBackIcon className="mr-2 h-4 w-4" /> Back
+      </LinkButton>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mx-[25%] flex flex-col items-center justify-center gap-3">
           <h1 className="mb-4 text-2xl font-bold">Create New Quiz</h1>
@@ -210,7 +199,10 @@ export default function CreateQuiz() {
             />
             <div className="flex flex-col items-center gap-1">
               <span className="text-nowrap text-sm">Show in PDF?</span>
-              <Switch />
+              <Switch
+                checked={showDescription}
+                onCheckedChange={(checked) => setShowDescription(checked)}
+              />
             </div>
           </div>
           <Select
@@ -228,12 +220,21 @@ export default function CreateQuiz() {
             </SelectContent>
           </Select>
         </div>
-        <GradingScaleInput
-          gradingScale={quiz.gradingScale}
-          setGradingScale={(newGradingScale) =>
-            setQuiz({ ...quiz, gradingScale: newGradingScale })
-          }
-        />
+        <div className="flex items-center justify-center gap-1">
+          <span className="text-nowrap text-sm">Grading Scale</span>
+          <Switch
+            checked={showGradingScale}
+            onCheckedChange={(checked) => setShowGradingScale(checked)}
+          />
+        </div>
+        {showGradingScale && (
+          <GradingScaleInput
+            gradingScale={quiz.gradingScale}
+            setGradingScale={(newGradingScale) =>
+              setQuiz({ ...quiz, gradingScale: newGradingScale })
+            }
+          />
+        )}
         <ReactSortable
           ref={contentRef}
           swap
@@ -267,10 +268,6 @@ export default function CreateQuiz() {
         </ReactSortable>
 
         <div className="flex justify-center gap-5">
-          <Button type="submit">
-            <Save className="mr-2 h-4 w-4" /> Save Quiz
-          </Button>
-
           <Button
             type="button"
             onClick={async (e) => {
@@ -278,12 +275,8 @@ export default function CreateQuiz() {
               await preview();
             }}
           >
-            <Download />
+            <Download className="mr-2 h-4 w-4" /> Save as PDF
           </Button>
-
-          <LinkButton href="/dashboard">
-            <Trash2 />
-          </LinkButton>
         </div>
       </form>
     </div>

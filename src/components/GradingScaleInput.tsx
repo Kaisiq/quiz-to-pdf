@@ -1,15 +1,11 @@
 import type React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { GradingScale } from "~/types/gradingScale";
+import type { GradingScale } from "~/types/gradingScale";
 
 interface GradingScaleInputProps {
-  gradingScale: { minScore: number; maxScore: number; grade: string }[];
-  setGradingScale: React.Dispatch<
-    React.SetStateAction<
-      { minScore: number; maxScore: number; grade: string }[]
-    >
-  >;
+  gradingScale: GradingScale;
+  setGradingScale: React.Dispatch<GradingScale>;
 }
 
 const GradingScaleInput: React.FC<GradingScaleInputProps> = ({
@@ -21,17 +17,19 @@ const GradingScaleInput: React.FC<GradingScaleInputProps> = ({
     field: "minScore" | "maxScore",
     value: string,
   ) => {
-    const newGradingScale = [...gradingScale] as GradingScale;
-    if (newGradingScale?.[index]?.[field]) {
-      newGradingScale[index][field] = Number(value);
-      setGradingScale(newGradingScale);
+    const newGradingScale = [...gradingScale];
+    if (newGradingScale?.[index]?.[field] !== undefined) {
+      newGradingScale[index][field] = Number.parseInt(value);
     }
+    setGradingScale(newGradingScale);
   };
 
   const handleGradeChange = (index: number, value: string) => {
-    const newGradingScale = [...gradingScale] as GradingScale;
+    const newGradingScale = [...gradingScale];
 
-    newGradingScale[index].grade = value;
+    if (newGradingScale?.[index]?.grade !== undefined) {
+      newGradingScale[index].grade = value;
+    }
     setGradingScale(newGradingScale);
   };
 
