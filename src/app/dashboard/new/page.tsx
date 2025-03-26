@@ -18,7 +18,6 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
 import { exportToPDF } from "~/lib/exportToPDF";
-import { quizToHtml } from "~/lib/quizToHtml";
 import type { Question } from "~/types/question";
 import { basicQuiz, type Quiz } from "~/types/quiz";
 import GradingScaleInput from "~/components/GradingScaleInput";
@@ -151,27 +150,6 @@ export default function CreateQuiz() {
     //save quiz data to DB for user
   };
 
-  const preview = async () => {
-    const outerContainer = document.createElement("div");
-    outerContainer.className =
-      "w-[var(--150-dpi-width)] h-[var(--150-dpi-height)] top-[10000vh]";
-    outerContainer.style.position = "absolute";
-
-    const container = document.createElement("div");
-    container.innerHTML = quizToHtml(quiz);
-
-    outerContainer.appendChild(container);
-
-    try {
-      document.body.appendChild(outerContainer);
-      await exportToPDF(container);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    } finally {
-      // document.body.removeChild(outerContainer);
-    }
-  };
-
   return (
     <div className="container relative w-full p-4">
       <LinkButton href="/">
@@ -273,7 +251,7 @@ export default function CreateQuiz() {
             type="button"
             onClick={async (e) => {
               e.preventDefault();
-              await preview();
+              await exportToPDF(quiz);
             }}
           >
             <Download className="mr-2 h-4 w-4" /> Save as PDF
