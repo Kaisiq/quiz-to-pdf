@@ -23,6 +23,8 @@ const exportToPDF = async (quiz: Quiz) => {
   try {
     document.body.appendChild(outerContainer);
 
+    const ulElements = container.querySelectorAll("ul");
+
     const totalHeight = container.scrollHeight;
     const pageCount = Math.ceil(totalHeight / a4Height);
 

@@ -38,9 +38,9 @@ const GradingScaleInput: React.FC<GradingScaleInputProps> = ({
   };
 
   return (
-    <div className="mx-[25%]">
+    <div className="md:mx-[10%] xl:mx-[25%]">
       <h2 className="mb-2 text-lg font-semibold">Grading Scale</h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-scroll rounded-md">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -84,14 +84,19 @@ const GradingScaleInput: React.FC<GradingScaleInputProps> = ({
                     placeholder="Grade (e.g., A, 5)"
                     value={grade.grade}
                     onChange={(e) => handleGradeChange(index, e.target.value)}
-                    className="w-24"
+                    className="w-32"
                   />
                 </td>
               </tr>
             ))}
             <tr>
               <td colSpan={2} className="px-6 py-4">
-                <Button type="button" variant="outline" onClick={addGradeRow}>
+                <Button
+                  className="m-auto flex"
+                  type="button"
+                  variant="outline"
+                  onClick={addGradeRow}
+                >
                   Add Grade
                 </Button>
               </td>
