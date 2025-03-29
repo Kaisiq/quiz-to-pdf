@@ -4,15 +4,16 @@ import type { Question } from "./question";
 export type Quiz = {
   title: string;
   description: string;
+  showDesctiption: boolean;
   columns: string;
   questions: Question[];
   gradingScale: GradingScale;
 };
 
-
 export const basicQuiz = {
   title: "A perfect title",
   description: "Even more perfect description",
+  showDesctiption: false,
   questions: [
     {
       id: 1,
@@ -25,4 +26,4 @@ export const basicQuiz = {
   ],
   columns: "grid-cols-2",
   gradingScale: [{ minScore: 0, maxScore: 0, grade: "" }],
-  } as Quiz;
+} as Quiz;

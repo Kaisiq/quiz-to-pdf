@@ -3,9 +3,10 @@ import { quizToHtml } from "~/lib/quizToHtml";
 import { jsPDF } from "jspdf";
 import type { Quiz } from "~/types/quiz";
 
+const a4Width = 1240;
+const a4Height = 1754;
+
 const exportToPDF = async (quiz: Quiz) => {
-  const a4Width = 1240;
-  const a4Height = 1754;
 
   const outerContainer = document.createElement("div");
   outerContainer.className =
@@ -23,44 +24,24 @@ const exportToPDF = async (quiz: Quiz) => {
   try {
     document.body.appendChild(outerContainer);
 
-    const ulElements = container.querySelectorAll("ul");
-
-    const totalHeight = container.scrollHeight;
-    const pageCount = Math.ceil(totalHeight / a4Height);
-
+    const sectionElements = container.querySelectorAll("section");
     const pdf = new jsPDF("p", "pt", "a4");
 
-    for (let i = 0; i < pageCount; i++) {
-      const pageContainer = document.createElement("div");
-      pageContainer.style.width = `${a4Width}px`;
-      pageContainer.style.height = `${a4Height}px`;
-      pageContainer.style.overflow = "hidden";
-      pageContainer.style.position = "absolute";
-      pageContainer.style.top = "0";
-      pageContainer.style.left = "0";
-
-      const pageContent = container.cloneNode(true) as HTMLDivElement;
-      pageContent.style.position = "absolute";
-      pageContent.style.top = `-${i * a4Height}px`;
-
-      pageContainer.appendChild(pageContent);
-      document.body.appendChild(pageContainer);
-
-      const canvas = await html2canvas(pageContainer);
-
-      if (i > 0) {
-        pdf.addPage();
-      }
+    for (const el of sectionElements) {
+      const canvas = await html2canvas(el, { scale: 2 });
       pdf.addImage(canvas, "canvas", 0, 0, a4Width / 2, a4Height / 2);
-      document.body.removeChild(pageContainer);
+      pdf.addPage();
     }
 
+    pdf.deletePage(pdf.getNumberOfPages());
     pdf.save("test-paper.pdf");
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error generating PDF:", error);
-  } finally {
-    document.body.removeChild(outerContainer); // Important: remove the container.
+  }
+  finally {
+    document.body.removeChild(outerContainer);
   }
 };
 
-export { exportToPDF };
+export { a4Width, a4Height, exportToPDF };
