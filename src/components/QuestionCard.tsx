@@ -34,24 +34,27 @@ const QuestionCard = ({
   removeAnswer: (questionId: number, answerId: number) => void;
   addAnswer: (questionId: number) => void;
 }) => (
-  <Card key={question.id} className="min-h-32 space-y-4 rounded-md border p-2">
-    <CardHeader className="flex flex-row items-center gap-2 pb-0">
+  <Card
+    key={question.id}
+    className="relative min-h-32 space-y-4 rounded-md border p-2"
+  >
+    <Button
+      type="button"
+      variant="outline"
+      className="absolute right-2 p-4"
+      onClick={() => removeQuestion(question.id)}
+    >
+      <Trash2 className="h-5 w-5" />
+    </Button>
+    <CardHeader className="flex w-full flex-row items-center gap-2 pb-0">
       <Textarea
-        className="text-xl font-semibold"
+        className="text-sm font-semibold md:text-xl"
         id={`question-${question.id}`}
         value={question.text}
         onChange={(e) => updateQuestionText(question.id, e.target.value)}
         placeholder={`Question ${qIndex + 1}`}
         required
       />
-      <Button
-        type="button"
-        variant="ghost"
-        size="high"
-        onClick={() => removeQuestion(question.id)}
-      >
-        <Trash2 className="h-5 w-5" />
-      </Button>
     </CardHeader>
     <CardContent className="flex flex-col gap-2">
       <RadioGroup>
@@ -70,12 +73,13 @@ const QuestionCard = ({
               }
               placeholder={`Answer ${aIndex + 1}`}
               required
-              className="flex-grow"
+              className="md:text-md flex-grow text-xs"
             />
             {question.answers.length > 1 && (
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
+                className="p-2"
                 size="icon"
                 onClick={() => removeAnswer(question.id, answer.id)}
               >
@@ -90,7 +94,7 @@ const QuestionCard = ({
         variant="outline"
         onClick={() => addAnswer(question.id)}
       >
-        <Plus /> Add Answer
+        <Plus className="mr-2 h-4 w-4" /> Add Answer
       </Button>
     </CardContent>
   </Card>

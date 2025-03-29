@@ -18,7 +18,6 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
 import { exportToPDF } from "~/lib/exportToPDF";
-import { quizToHtml } from "~/lib/quizToHtml";
 import type { Question } from "~/types/question";
 import { basicQuiz, type Quiz } from "~/types/quiz";
 import GradingScaleInput from "~/components/GradingScaleInput";
@@ -151,33 +150,13 @@ export default function CreateQuiz() {
     //save quiz data to DB for user
   };
 
-  const preview = async () => {
-    const outerContainer = document.createElement("div");
-    outerContainer.className = "w-[100vw] h-[100vh] top-[10000vh]";
-    outerContainer.style.position = "absolute";
-
-    const container = document.createElement("div");
-    container.innerHTML = quizToHtml(quiz);
-
-    outerContainer.appendChild(container);
-
-    try {
-      document.body.appendChild(outerContainer);
-      await exportToPDF(container);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    } finally {
-      document.body.removeChild(outerContainer);
-    }
-  };
-
   return (
     <div className="container relative w-full p-4">
       <LinkButton href="/">
         <SkipBackIcon className="mr-2 h-4 w-4" /> Back
       </LinkButton>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="mx-[25%] flex flex-col items-center justify-center gap-3">
+        <div className="flex flex-col items-center justify-center gap-3 md:mx-[25%]">
           <h1 className="mb-4 text-2xl font-bold">Create New Quiz</h1>
 
           <Input
@@ -188,7 +167,7 @@ export default function CreateQuiz() {
             placeholder="Enter quiz title"
             required
           />
-          <div className="flex w-full items-center gap-3">
+          <div className="flex w-full flex-col items-center gap-3 md:flex-row">
             <Textarea
               id="quiz-description"
               value={quiz.description}
@@ -197,7 +176,7 @@ export default function CreateQuiz() {
               }
               placeholder="Enter quiz description"
             />
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-1 md:flex-col">
               <span className="text-nowrap text-sm">Show in PDF?</span>
               <Switch
                 checked={showDescription}
@@ -210,8 +189,8 @@ export default function CreateQuiz() {
               setQuiz({ ...quiz, columns: value });
             }}
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="How much columns per row" />
+            <SelectTrigger className="sm:w-full md:w-[180px]">
+              <SelectValue placeholder="How many columns per row" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="grid-cols-1">1 Column</SelectItem>
@@ -242,7 +221,7 @@ export default function CreateQuiz() {
           setList={(newQuestions) =>
             setQuiz({ ...quiz, questions: newQuestions })
           }
-          className={`grid ${quiz.columns} items-center gap-5`}
+          className={`grid sm:grid-cols-1 md:grid-cols-2 lg:${quiz.columns} items-center gap-5`}
         >
           {quiz.questions.map((question, qIndex) => (
             <QuestionCard
@@ -272,7 +251,7 @@ export default function CreateQuiz() {
             type="button"
             onClick={async (e) => {
               e.preventDefault();
-              await preview();
+              await exportToPDF(quiz);
             }}
           >
             <Download className="mr-2 h-4 w-4" /> Save as PDF
