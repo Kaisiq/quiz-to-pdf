@@ -6,14 +6,12 @@ export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="mx-[5%] mt-10 flex h-full rounded-md bg-gray-100 dark:bg-gray-900 lg:mx-[0%] lg:mr-48">
-      <aside className="hidden w-48 min-w-48 max-w-48 border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 lg:block">
-        <div className="flex h-14 items-center justify-center border-b border-gray-200 dark:border-gray-700">
+    <div className="mx-[5%] mt-10 flex h-full rounded-md bg-background text-foreground dark:bg-foreground dark:text-background lg:mx-[0%] lg:mr-48">
+      <aside className="hidden w-48 min-w-48 max-w-48 border-r border-foreground border-opacity-40 lg:block">
+        <div className="flex h-14 items-center justify-center border-b border-foreground border-opacity-40 dark:border-background">
           <Link href="/" className="flex items-center">
             <FileText className="h-6 w-6 text-primary" />
-            <span className="ml-2 text-lg font-semibold text-gray-800 dark:text-white">
-              QuizMaster
-            </span>
+            <span className="ml-2 text-lg font-semibold">QuizMaster</span>
           </Link>
         </div>
         <nav className="p-4">
@@ -21,7 +19,7 @@ export default function Layout({
             <li>
               <Link
                 href="/dashboard"
-                className="flex items-center rounded-md p-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                className="hover:bg-background-secondary flex items-center rounded-md p-2 dark:hover:bg-gray-700"
               >
                 <FileText className="mr-3 h-5 w-5" />
                 My Quizzes
@@ -30,7 +28,7 @@ export default function Layout({
             <li>
               <Link
                 href="#"
-                className="flex items-center rounded-md p-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                className="hover:bg-background-secondary flex items-center rounded-md p-2 dark:hover:bg-gray-700"
               >
                 <Settings className="mr-3 h-5 w-5" />
                 Settings
