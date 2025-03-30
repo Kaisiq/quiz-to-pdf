@@ -151,7 +151,7 @@ export default function CreateQuiz() {
   };
 
   return (
-    <div className="container relative w-full p-4">
+    <div className="bg-background-secondary container relative w-full rounded-r-3xl p-4">
       <LinkButton href="/">
         <SkipBackIcon className="mr-2 h-4 w-4" /> Back
       </LinkButton>
