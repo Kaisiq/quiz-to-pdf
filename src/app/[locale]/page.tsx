@@ -1,4 +1,3 @@
-import type { GetStaticProps } from "next";
 import Link from "next/link";
 import { HydrateClient } from "~/trpc/server";
 import { Button } from "~/components/ui/button";
@@ -57,7 +56,7 @@ export default async function Home({
           >
             <div className="mx-[15%] px-4 md:px-6">
               <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl">
-                {dictionary.features}
+                {dictionary.featuresText}
               </h2>
               <div className="grid grid-cols-2 gap-10">
                 <div className="flex flex-col items-center space-y-3 text-center">
