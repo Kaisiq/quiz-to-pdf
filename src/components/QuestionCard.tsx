@@ -6,6 +6,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
+import type { Question } from "~/lib/types";
 
 const QuestionCard = ({
   question,
@@ -17,11 +18,7 @@ const QuestionCard = ({
   removeAnswer,
   addAnswer,
 }: {
-  question: {
-    id: number;
-    text: string;
-    answers: { id: number; isCorrect: boolean; text: string }[];
-  };
+  question: Question;
   qIndex: number;
   updateQuestionText: (id: number, text: string) => void;
   removeQuestion: (id: number) => void;

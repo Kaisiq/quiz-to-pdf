@@ -18,13 +18,13 @@ import {
 import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
 import { exportToPDF } from "~/lib/exportToPDF";
-import type { Question } from "~/types/question";
-import { basicQuiz, type Quiz } from "~/types/quiz";
+import type { Dictionary, Question } from "~/lib/types";
+import { basicQuiz, type Quiz } from "~/lib/types";
 import GradingScaleInput from "~/components/GradingScaleInput";
 
 Sortable.mount(new Swap());
 
-export default function CreateQuiz() {
+export default function CreateQuiz({ dictionary }: { dictionary: Dictionary }) {
   const [quiz, setQuiz] = useState<Quiz>(basicQuiz);
   const [showDescription, setShowDescription] = useState(false);
   const [showGradingScale, setShowGradingScale] = useState(false);
@@ -151,20 +151,22 @@ export default function CreateQuiz() {
   };
 
   return (
-    <div className="bg-background-secondary container relative w-full rounded-r-3xl p-4">
+    <div className="container relative w-full rounded-r-3xl bg-background-secondary p-4">
       <LinkButton href="/">
-        <SkipBackIcon className="mr-2 h-4 w-4" /> Back
+        <SkipBackIcon className="mr-2 h-4 w-4" /> {dictionary.backButton}
       </LinkButton>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col items-center justify-center gap-3 md:mx-[25%]">
-          <h1 className="mb-4 text-2xl font-bold">Create New Quiz</h1>
+          <h1 className="mb-4 text-2xl font-bold">
+            {dictionary.createNewTitle}
+          </h1>
 
           <Input
             className=""
             id="quiz-title"
             value={quiz.title}
             onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
-            placeholder="Enter quiz title"
+            placeholder={dictionary.quizTitlePlaceholder}
             required
           />
           <div className="flex w-full flex-col items-center gap-3 md:flex-row">
@@ -174,10 +176,12 @@ export default function CreateQuiz() {
               onChange={(e) =>
                 setQuiz({ ...quiz, description: e.target.value })
               }
-              placeholder="Enter quiz description"
+              placeholder={dictionary.quizDescriptionPlaceholder}
             />
             <div className="flex items-center gap-1 md:flex-col">
-              <span className="text-nowrap text-sm">Show in PDF?</span>
+              <span className="text-nowrap text-sm">
+                {dictionary.quizShowDescription}
+              </span>
               <Switch
                 checked={showDescription}
                 onCheckedChange={(checked) => setShowDescription(checked)}
@@ -190,17 +194,19 @@ export default function CreateQuiz() {
             }}
           >
             <SelectTrigger className="sm:w-full md:w-[180px]">
-              <SelectValue placeholder="How many columns per row" />
+              <SelectValue placeholder={dictionary.quizColumnsPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="grid-cols-1">1 Column</SelectItem>
-              <SelectItem value="grid-cols-2">2 Columns</SelectItem>
-              <SelectItem value="grid-cols-3">3 Columns</SelectItem>
+              <SelectItem value="grid-cols-1">{dictionary.quiz1Col}</SelectItem>
+              <SelectItem value="grid-cols-2">{dictionary.quiz2Col}</SelectItem>
+              <SelectItem value="grid-cols-3">{dictionary.quiz3Col}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="flex items-center justify-center gap-1">
-          <span className="text-nowrap text-sm">Grading Scale</span>
+          <span className="text-nowrap text-sm">
+            {dictionary.quizGradingShow}
+          </span>
           <Switch
             checked={showGradingScale}
             onCheckedChange={(checked) => setShowGradingScale(checked)}
@@ -242,7 +248,7 @@ export default function CreateQuiz() {
             variant="outline"
             onClick={addQuestion}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add Question
+            <Plus className="mr-2 h-4 w-4" /> {dictionary.questionAdd}
           </Button>
         </ReactSortable>
 
@@ -254,7 +260,7 @@ export default function CreateQuiz() {
               await exportToPDF(quiz);
             }}
           >
-            <Download className="mr-2 h-4 w-4" /> Save as PDF
+            <Download className="mr-2 h-4 w-4" /> {dictionary.quizSave}
           </Button>
         </div>
       </form>

@@ -1,7 +1,7 @@
 import html2canvas from "html2canvas";
 import { quizToHtml } from "~/lib/quizToHtml";
 import { jsPDF } from "jspdf";
-import type { Quiz } from "~/types/quiz";
+import type { Quiz } from "./types";
 
 const a4Width = 1240;
 const a4Height = 1754;

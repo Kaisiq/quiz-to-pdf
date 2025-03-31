@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import type { Quiz } from "~/types/quiz";
+import type { Quiz } from "~/lib/types";
 
 export const ExportDialog = ({ quiz }: { quiz: Quiz }) => {
   return (

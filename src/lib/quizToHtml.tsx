@@ -1,5 +1,5 @@
-import type { Question } from "~/types/question";
-import type { Quiz } from "~/types/quiz";
+import type { Question } from "./types";
+import type { Quiz } from "./types";
 import { a4Height } from "./exportToPDF";
 
 const letters = [

@@ -1,7 +1,7 @@
 import type React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import type { GradingScale } from "~/types/gradingScale";
+import type { GradingScale } from "~/lib/types";
 
 interface GradingScaleInputProps {
   gradingScale: GradingScale;
