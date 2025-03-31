@@ -18,8 +18,8 @@ export default function Layout({
           <ul className="space-y-2">
             <li>
               <Link
-                href="/dashboard"
-                className="hover:bg-background-secondary flex items-center rounded-md p-2 dark:hover:bg-gray-700"
+                href="/"
+                className="flex items-center rounded-md p-2 hover:bg-background-secondary dark:hover:bg-gray-700"
               >
                 <FileText className="mr-3 h-5 w-5" />
                 My Quizzes
@@ -28,7 +28,7 @@ export default function Layout({
             <li>
               <Link
                 href="#"
-                className="hover:bg-background-secondary flex items-center rounded-md p-2 dark:hover:bg-gray-700"
+                className="flex items-center rounded-md p-2 hover:bg-background-secondary dark:hover:bg-gray-700"
               >
                 <Settings className="mr-3 h-5 w-5" />
                 Settings

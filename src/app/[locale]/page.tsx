@@ -1,10 +1,19 @@
+import type { GetStaticProps } from "next";
 import Link from "next/link";
 import { HydrateClient } from "~/trpc/server";
 import { Button } from "~/components/ui/button";
 import { FileText, CheckCircle, Download } from "lucide-react";
 import { LinkButton } from "~/components/ui/linkbutton";
+import api from "~/lib/api";
 
-export default async function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const dictionary = await api.dictionaries.fetch(locale);
+
   return (
     <HydrateClient>
       <div className="mt-10 bg-background text-foreground">
@@ -14,7 +23,9 @@ export default async function Home() {
             <span className="ml-2 text-lg font-bold">QuizMaster</span>
           </Link>
           <div className="flex gap-5">
-            <LinkButton href="/dashboard/new">Create Quiz</LinkButton>
+            <LinkButton href={`/${locale}/dashboard/new`}>
+              {dictionary.create}
+            </LinkButton>
           </div>
         </header>
         <main className="flex-1">
@@ -23,42 +34,44 @@ export default async function Home() {
               <div className="flex flex-col items-center space-y-4 text-center">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                    Create Quizzes with Ease
+                    {dictionary.heroTitle}
                   </h1>
                   <p className="mx-auto max-w-[700px] text-foreground opacity-80 dark:text-background md:text-xl">
-                    Design, build, and export professional quizzes in minutes.
-                    Perfect for teachers, trainers, and quiz enthusiasts.
+                    {dictionary.heroDescription}
                   </p>
                 </div>
                 <div className="space-x-4">
-                  <LinkButton href="/dashboard/new">Get Started</LinkButton>
-                  <Button variant="outline">Learn More</Button>
+                  <LinkButton href={`/${locale}/dashboard/new`}>
+                    {dictionary.heroMainButton}
+                  </LinkButton>
+                  <Button variant="outline">
+                    {dictionary.heroSecondaryButton}
+                  </Button>
                 </div>
               </div>
             </div>
           </section>
           <section
             id="features"
-            className="bg-background-secondary w-full py-12 dark:bg-background md:py-24 lg:py-32"
+            className="w-full bg-background-secondary py-12 dark:bg-background md:py-24 lg:py-32"
           >
             <div className="mx-[15%] px-4 md:px-6">
               <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl">
-                Features
+                {dictionary.features}
               </h2>
               <div className="grid grid-cols-2 gap-10">
                 <div className="flex flex-col items-center space-y-3 text-center">
                   <CheckCircle className="h-12 w-12 dark:text-background" />
-                  <h3 className="text-xl font-bold">Easy Quiz Creation</h3>
+                  <h3 className="text-xl font-bold">{dictionary.feat1Title}</h3>
                   <p className="opacity-70 dark:text-foreground">
-                    Intuitive interface for creating quizzes with various
-                    question types.
+                    {dictionary.feat1Description}
                   </p>
                 </div>
                 <div className="flex flex-col items-center space-y-3 text-center">
                   <Download className="h-12 w-12 dark:text-background" />
-                  <h3 className="text-xl font-bold">PDF Export</h3>
+                  <h3 className="text-xl font-bold">{dictionary.feat2Title}</h3>
                   <p className="opacity-70 dark:text-foreground">
-                    Export your quizzes as professional PDF documents.
+                    {dictionary.feat2Description}
                   </p>
                 </div>
               </div>
@@ -69,17 +82,18 @@ export default async function Home() {
               <div className="flex w-[85%] flex-col items-center justify-center space-y-4 text-center">
                 <div className="space-y-2">
                   <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                    Get Started Today
+                    {dictionary.sectionTitle}
                   </h2>
                   <p className="max-w-[600px] text-foreground opacity-70 dark:text-background md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Create a quiz using our website for free!
+                    {dictionary.sectionSubTitle}
                   </p>
                 </div>
                 <div className="w-full max-w-sm space-y-2">
-                  <LinkButton href="/dashboard/new">Create a Quiz</LinkButton>
+                  <LinkButton href={`/${locale}/dashboard/new`}>
+                    {dictionary.create}
+                  </LinkButton>
                   <p className="text-xs text-foreground opacity-70 dark:text-background">
-                    The website is under heavy development and may want you to
-                    sign up in the future.
+                    {dictionary.sectionDescription}
                   </p>
                 </div>
               </div>
